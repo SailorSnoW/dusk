@@ -191,6 +191,7 @@ void reset_for_speedrun_mode() {
     getSettings().game.canTransformAnywhere.setValue(false);
     getSettings().game.fastSpinner.setValue(false);
     getSettings().game.freeMagicArmor.setValue(false);
+    getSettings().game.invincibleEnemies.setValue(false);
 
     getSettings().game.enableTurboKeybind.setValue(false);
     getSettings().game.debugFlyCam.setValue(false);
@@ -1088,6 +1089,8 @@ SettingsWindow::SettingsWindow(bool prelaunch) : mPrelaunch(prelaunch) {
             "Speeds up Spinner movement while holding R.");
         addCheat("Free Magic Armor", getSettings().game.freeMagicArmor,
             "Lets the magic armor work without consuming rupees.");
+        addCheat("Invincible Enemies", getSettings().game.invincibleEnemies,
+            "Prevents enemies from taking damage.");
     });
 
     add_tab("Interface", [this](Rml::Element* content) {

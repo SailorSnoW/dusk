@@ -167,6 +167,7 @@ struct UserSettings {
         ConfigVar<bool> canTransformAnywhere;
         ConfigVar<bool> fastSpinner;
         ConfigVar<bool> freeMagicArmor;
+        ConfigVar<bool> invincibleEnemies;
 
         // Technical
         ConfigVar<bool> restoreWiiGlitches;

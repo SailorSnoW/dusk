@@ -42,6 +42,7 @@ namespace dusk {
         getSettings().game.canTransformAnywhere.setValue(false);
         getSettings().game.fastSpinner.setValue(false);
         getSettings().game.freeMagicArmor.setValue(false);
+        getSettings().game.invincibleEnemies.setValue(false);
 
         getSettings().game.enableTurboKeybind.setValue(false);
         getSettings().game.debugFlyCam.setValue(false);
