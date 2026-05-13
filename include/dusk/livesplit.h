@@ -7,10 +7,14 @@ void onGameFrame();
 uint64_t getFrameCount();
 void start();
 void reset();
+void split();
+void skipSplit();
+void unsplit();
 void connectLiveSplit(const char* host = "127.0.0.1", int port = 16834);
 void disconnectLiveSplit();
 bool consumeConnectedEvent();
 bool consumeDisconnectedEvent();
+bool isConnected();
 void updateLiveSplit();
 void shutdown();
 }

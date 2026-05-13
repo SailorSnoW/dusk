@@ -1,6 +1,7 @@
 #include "settings.hpp"
 
 #include "aurora/gfx.h"
+#include "autosplits.hpp"
 #include "bool_button.hpp"
 #include "controller_config.hpp"
 #include "dusk/app_info.hpp"
@@ -1126,6 +1127,25 @@ SettingsWindow::SettingsWindow(bool prelaunch) : mPrelaunch(prelaunch) {
                         }
                     },
                 .isDisabled = [] { return IsMobile || !getSettings().game.speedrunMode; },
+            });
+        config_bool_select(leftPane, rightPane, getSettings().game.autosplitEnabled,
+            {
+                .key = "Autosplit",
+                .helpText = "Automatically send splits to LiveSplit based on the configured event route."
+                " Use \"Configure Splits\" below to choose which events split and in what order.",
+                .isDisabled = [] {
+                    return IsMobile || !getSettings().game.speedrunMode || !getSettings().game.liveSplitEnabled;
+                },
+            });
+        leftPane.register_control(
+            leftPane.add_button("Configure Splits").on_pressed([this] {
+                push(std::make_unique<AutosplitsWindow>());
+            }),
+            rightPane, [](Pane& pane) {
+                pane.clear();
+                pane.add_text("Open the autosplit event route editor."
+                              " Pick from the catalog of supported events, toggle each on/off,"
+                              " and reorder them to match your run.");
             });
         config_bool_select(leftPane, rightPane, getSettings().game.showSpeedrunRTATimer,
             {
