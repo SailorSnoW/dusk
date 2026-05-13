@@ -14,6 +14,7 @@ enum class Category : uint8_t {
     Twilight,
     Bosses,
     Dungeons,
+    Stages,
     Misc,
 };
 

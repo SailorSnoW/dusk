@@ -14,6 +14,7 @@
 #include "nlohmann/json.hpp"
 
 #include <algorithm>
+#include <cstring>
 #include <filesystem>
 
 namespace dusk::autosplit {
@@ -44,6 +45,11 @@ bool crystalCollected(u8 idx) {
 
 bool mirrorCollected(u8 idx) {
     return dComIfGs_isCollectMirror(idx);
+}
+
+bool stageIs(const char* name) {
+    const char* current = dComIfGp_getStartStageName();
+    return current != nullptr && std::strcmp(current, name) == 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -142,6 +148,7 @@ const char* categoryLabel(Category c) noexcept {
     case Category::Twilight: return "Twilight";
     case Category::Bosses:   return "Bosses";
     case Category::Dungeons: return "Dungeons";
+    case Category::Stages:   return "Stages";
     case Category::Misc:     return "Misc";
     }
     return "Misc";
@@ -168,9 +175,11 @@ void Manager::buildRoutes() {
                 // Ordon / opening
                 "item_ordon_sword",
                 "item_hylian_shield",
+                "story_sewers_cleared",
                 "story_forest_spirit",
 
                 // Faron
+                "stage_enter_faron",
                 "twilight_faron",
                 "item_lantern",
                 "item_slingshot",
@@ -179,7 +188,8 @@ void Manager::buildRoutes() {
                 "dungeon_forest",
                 "shadow_1",
 
-                // Eldin / Mines
+                // Eldin / Mines / Kakariko
+                "stage_enter_kakariko",
                 "twilight_eldin",
                 "item_bow",
                 "item_iron_boots",
@@ -193,17 +203,20 @@ void Manager::buildRoutes() {
                 "dungeon_lakebed",
                 "shadow_3",
 
-                // Midna revived / Light Sword
+                // Midna's Desperate Hour
+                "story_mdh_started",
                 "story_midna_revived",
                 "item_light_sword",
 
                 // Arbiter's
+                "stage_enter_arbiters",
                 "item_spinner",
                 "dungeon_arbiters",
                 "mirror_1",
 
                 // Snowpeak
                 "story_king_bulblin_desert",
+                "stage_enter_snowpeak",
                 "item_ball_chain",
                 "dungeon_snowpeak",
                 "mirror_2",
@@ -226,6 +239,8 @@ void Manager::buildRoutes() {
                 "dungeon_palace_of_twilight",
                 "item_light_arrows",
                 "story_castle_barrier",
+                "stage_enter_hyrule",
+                "stage_enter_throne_room",
                 "boss_ganondorf",
             },
         },
@@ -383,6 +398,34 @@ void Manager::buildCatalog() {
         { "boss_ganondorf",         "Ganondorf Defeated",
           "Final blow dealt to Ganondorf.",
           Category::Bosses, []{ return linkProcIs(daAlink_c::PROC_GANON_FINISH); } },
+
+        // ---- Stage transitions (first entry) ----
+        { "stage_enter_faron",       "Enter Faron Woods",
+          "First entry into Faron Woods (stage F_SP108).",
+          Category::Stages, []{ return stageIs("F_SP108"); } },
+        { "stage_enter_kakariko",    "Enter Kakariko Village",
+          "First entry into Kakariko Village (stage F_SP109).",
+          Category::Stages, []{ return stageIs("F_SP109"); } },
+        { "stage_enter_snowpeak",    "Enter Snowpeak Mountain",
+          "First entry into Snowpeak Mountain (stage F_SP114).",
+          Category::Stages, []{ return stageIs("F_SP114"); } },
+        { "stage_enter_arbiters",    "Enter Arbiter's Grounds",
+          "First entry into Arbiter's Grounds dungeon (stage D_MN10).",
+          Category::Stages, []{ return stageIs("D_MN10"); } },
+        { "stage_enter_hyrule",      "Enter Hyrule Castle",
+          "First entry into Hyrule Castle dungeon (stage D_MN09).",
+          Category::Stages, []{ return stageIs("D_MN09"); } },
+        { "stage_enter_throne_room", "Enter Hyrule Castle Throne Room",
+          "First entry into the Throne Room (D_MN09A) — Puppet Zelda fight starts here.",
+          Category::Stages, []{ return stageIs("D_MN09A"); } },
+
+        // ---- Story milestones (additional) ----
+        { "story_sewers_cleared",    "Sewers Cleared (First Midna Warp)",
+          "Cutscene 8: Midna warps Link out of Hyrule Castle Sewers (M_014).",
+          Category::Bosses, []{ return eventBit(dSv_event_flag_c::M_014); } },
+        { "story_mdh_started",       "Midna's Desperate Hour Started",
+          "Cutscene 20: Zant attacks Midna, starting Midna's Desperate Hour (M_071).",
+          Category::Bosses, []{ return eventBit(dSv_event_flag_c::M_071); } },
 
         // ---- Hidden Skills ----
         { "skill_1_shield_attack",   "Hidden Skill 1 — Ending Blow",
