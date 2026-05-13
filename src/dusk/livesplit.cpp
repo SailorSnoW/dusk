@@ -44,11 +44,14 @@
 #endif
 
 #include <cstdio>
+#include "aurora/lib/logging.hpp"
 #include "dusk/autosplit.h"
 #include "dusk/livesplit.h"
 #include "f_op/f_op_overlap_mng.h"
 
 namespace dusk::speedrun {
+
+static aurora::Module Log{"dusk::speedrun"};
 
 static bool     running           = false;
 static bool     startPending      = false;
@@ -65,6 +68,7 @@ static int      storedPort        = 16834;
 
 static void sendCmd(const char* cmd) {
     if (sock == INVALID_SOCKET) {
+        Log.warn("sendCmd({}): socket invalid, dropping", cmd);
         return;
     }
 
@@ -74,7 +78,9 @@ static void sendCmd(const char* cmd) {
         return;
     }
 
-    if (send(sock, msg, len, kSendFlags) >= 0) {
+    const int sent = send(sock, msg, len, kSendFlags);
+    if (sent >= 0) {
+        Log.info("sendCmd({}): {} bytes sent", cmd, sent);
         if (!connected) {
             connected = connectPending = true;
         }
@@ -123,10 +129,7 @@ void onGameFrame() {
 }
 
 void start() {
-    if (running) {
-        return;
-    }
-
+    Log.info("speedrun::start() (was running={})", running);
     running = true;
     startPending = true;
     frameCount = 0;
@@ -255,13 +258,15 @@ void updateLiveSplit() {
         if (!FD_ISSET(sock, &writefds)) {
             return;
         }
-        sendCmd("initgametime");
+        Log.info("TCP connection established");
+        sendCmd("pausegametime");
+        sendCmd("unpausegametime");
         return;
     }
 
     if (startPending) {
+        Log.info("startPending: sending reset + starttimer");
         startPending = false;
-        sendCmd("initgametime");
         sendCmd("reset");
         sendCmd("starttimer");
     }

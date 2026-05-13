@@ -316,6 +316,9 @@ void Overlay::update() {
                 mDoCPd_c::getHoldA(PAD_1) && mDoCPd_c::getTrigZ(PAD_1))
             {
                 m_speedrunInfo.reset();
+                if (getSettings().game.liveSplitEnabled) {
+                    dusk::speedrun::reset();
+                }
             }
 
             // L+R+A+Y to manually stop timer
